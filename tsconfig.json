@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "*": ["*", "src/*"] // Установите путь для импортов с использованием пути "./src"
+    },
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["dom", "es6", "es2015.promise"],
+    "moduleResolution": "node",
+    "jsx": "react",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+  }
+}

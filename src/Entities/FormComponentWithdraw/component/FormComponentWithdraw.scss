@@ -1,0 +1,14 @@
+@import "../../../Shared/mixins/mixins";
+.error-message {
+  position: absolute;
+  top: 39px;
+  left: 100px;
+}
+.approve-form {
+  position: relative;
+  @include input-form;
+}
+.form-label {
+  margin: 0;
+  white-space: nowrap;
+}

@@ -1,0 +1,94 @@
+stages:
+  - build
+  - deploy
+  - notify
+
+.build-project: &build-project
+  tags:
+    - builder
+  stage: build
+  image: docker:stable
+  only:
+    - dev
+  script:
+    - builderimage=git.fxmaster.tech:5050/kiosk/front:${CI_COMMIT_REF_NAME}
+    - docker build -t ${builderimage} -m 8g --build-arg REACT_APP_PROD_BASE_URL=${REACT_APP_PROD_BASE_URL} -f .dockerfile .
+    - id=$(docker create ${builderimage})
+    - docker cp $id:/app/build/ ./build
+    - docker rm -f $id
+    - tar -czvf build.tar.gz build
+  artifacts:
+    name: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
+    paths:
+    - build.tar.gz
+
+.deploy-project: &deploy-project
+  tags:
+    - stage
+  stage: deploy
+  only:
+    - dev
+  script:
+    - export PATH_TO_SITE=/opt/kiosk/front
+    - export TIME="$(date +%d%m%Y\%H%M%S)"
+    - mkdir ${PATH_TO_SITE}/releases/${TIME}
+    - tar -xf build.tar.gz -C ${PATH_TO_SITE}/releases/${TIME}
+    - rm -rf ${PATH_TO_SITE}/static
+    - ln -s ${PATH_TO_SITE}/releases/${TIME} ${PATH_TO_SITE}/static
+
+.notify-team: &notify-team
+  environment: stage 
+  tags:
+    - builder
+  stage: notify
+  dependencies: []
+  only:
+    - dev
+  script:
+    - curl -s -X POST ${TELEGRAM_URL} -d chat_id=-1001617321924 -d text="Kiosk front собран и запущен на сервере ${CI_ENVIRONMENT_NAME}. Бранч ${CI_COMMIT_REF_NAME}, коммит '${CI_COMMIT_MESSAGE}', автор ${GITLAB_USER_LOGIN}"
+
+build-stage:
+  extends: .build-project
+  environment: stage
+  only:
+    refs:
+        - dev
+
+build-prod:
+  extends: .build-project
+  environment: prod
+  only:
+    refs:
+        - master
+
+deploy-stage:
+  extends: .deploy-project
+  environment: stage
+  tags: 
+    - stage
+  only:
+    refs:
+      - dev
+
+deploy-prod:
+  extends: .deploy-project
+  environment: prod
+  tags: 
+    - copytrading
+  only:
+    refs:
+      - master
+
+notify-stage:
+  extends: .notify-team
+  environment: stage
+  only:
+    refs:
+        - dev
+
+notify-master:
+  extends: .notify-team
+  environment: prod
+  only:
+    refs:
+        - master

@@ -1,0 +1,10 @@
+@import "../../Shared/mixins/mixins";
+
+.h1 {
+  display: flex;
+  justify-content: center;
+}
+.auth-form {
+  @include input-form;
+  flex-direction: column;
+}

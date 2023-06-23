@@ -1,0 +1,13 @@
+@mixin input-form {
+  display: flex;
+  margin-top: 10px;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+}
+@mixin spinner-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}

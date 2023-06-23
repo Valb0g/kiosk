@@ -1,0 +1,4 @@
+@import "../../Shared/mixins/mixins";
+.spinner-container {
+  @include spinner-container
+}
