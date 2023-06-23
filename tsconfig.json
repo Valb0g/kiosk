@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./src",
     "paths": {
-      "*": ["*", "src/*"] // Установите путь для импортов с использованием пути "./src"
+      "*": ["*", "src/*"]
     },
     "target": "es5",
     "module": "commonjs",
